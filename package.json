@@ -1,0 +1,9 @@
+{
+  "name": "samuride-quest",
+  "version": "1.0.0",
+  "description": "SAMURIDE QUEST - Kyoto Mystery Tour App",
+  "private": true,
+  "engines": {
+    "node": "18.x"
+  }
+}

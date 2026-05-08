@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SAMURIDE QUEST</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   DESIGN SYSTEM
+   Aesthetic: Luxury editorial dark
+   — ink black + lacquer red + aged gold
+   — Playfair Display (editorial gravitas)
+   — DM Sans (clean utility)
+   — DM Mono (data / labels)
+════════════════════════════════════════ */
+:root {
+  /* Core */
+  --ink:     #09080C;
+  --ink2:    #110F16;
+  --ink3:    #1A1820;
+  --paper:   #EDE6D6;
+  --paper2:  #D8CFBC;
+
+  /* Brand */
+  --lacquer: #991B1B;
+  --lacquer2:#B91C1C;
+  --lacquer-glow: rgba(153,27,27,0.35);
+  --gold:    #C9981A;
+  --gold2:   #A07614;
+  --gold-dim: rgba(201,152,26,0.15);
+
+  /* UI */
+  --muted:   #6B6374;
+  --border:  rgba(237,230,214,0.07);
+  --border-g:rgba(201,152,26,0.2);
+  --green:   #166534;
+  --green2:  #15803D;
+
+  /* Easing */
+  --ease-out: cubic-bezier(0.16,1,0.3,1);
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html { height:100%; }
+
+body {
+  font-family:'DM Sans', sans-serif;
+  background:var(--ink);
+  color:var(--paper);
+  height:100%;
+  overflow:hidden;
+  position:relative;
+}
+
+/* Subtle noise grain */
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:999;
+  pointer-events:none;
+  opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ────────────────────────────────────
+   SCREENS
+──────────────────────────────────── */
+.screen {
+  position:fixed; inset:0; z-index:10;
+  display:flex; flex-direction:column;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.45s var(--ease-out);
+  overflow:hidden;
+}
+.screen.active { opacity:1; pointer-events:all; }
+
+.scrollable {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.scrollable::-webkit-scrollbar { display:none; }
+
+/* ────────────────────────────────────
+   TYPOGRAPHY
+──────────────────────────────────── */
+.t-display {
+  font-family:'Playfair Display', serif;
+  font-weight:900; line-height:1.05;
+}
+
+.t-serif {
+  font-family:'Playfair Display', serif;
+  font-weight:400;
+}
+
+.t-serif-i {
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+}
+
+.t-mono {
+  font-family:'DM Mono', monospace;
+}
+
+/* ────────────────────────────────────
+   SHARED COMPONENTS
+──────────────────────────────────── */
+.pill {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 10px; border-radius:20px;
+  font-family:'DM Mono', monospace;
+  font-size:9px; letter-spacing:1.5px; text-transform:uppercase;
+}
+
+.pill-lacquer { background:rgba(153,27,27,0.2); color:var(--lacquer2); border:1px solid rgba(153,27,27,0.3); }
+.pill-gold    { background:var(--gold-dim); color:var(--gold); border:1px solid var(--border-g); }
+.pill-muted   { background:rgba(237,230,214,0.06); color:var(--muted); border:1px solid var(--border); }
+.pill-green   { background:rgba(21,128,61,0.15); color:#4ADE80; border:1px solid rgba(21,128,61,0.3); }
+
+.card {
+  background:var(--ink2);
+  border:1px solid var(--border);
+  border-radius:16px; padding:18px;
+  position:relative; overflow:hidden;
+}
+
+.card-lined {
+  border-radius:16px; padding:18px 18px 18px 22px;
+  position:relative; overflow:hidden;
+  background:rgba(237,230,214,0.03);
+  border:1px solid rgba(201,152,26,0.12);
+}
+.card-lined::before {
+  content:''; position:absolute;
+  left:0; top:0; bottom:0; width:3px;
+  border-radius:3px 0 0 3px;
+}
+.card-lined.line-gold::before { background:linear-gradient(to bottom, var(--gold), var(--lacquer)); }
+.card-lined.line-lacquer::before { background:var(--lacquer2); }
+.card-lined.line-green::before { background:var(--green2); }
+
+.sticky-top {
+  position:sticky; top:0; z-index:20;
+  background:rgba(9,8,12,0.94);
+  border-bottom:1px solid var(--border-g);
+  backdrop-filter:blur(16px);
+  flex-shrink:0;
+}
+
+.icon-btn {
+  width:36px; height:36px; border-radius:50%;
+  background:rgba(237,230,214,0.06);
+  border:1px solid var(--border-g);
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; cursor:pointer; transition:all 0.2s;
+  color:var(--paper);
+}
+.icon-btn:active { background:rgba(237,230,214,0.12); transform:scale(0.94); }
+
+/* Buttons */
+.btn {
+  width:100%; padding:16px; border:none; border-radius:12px;
+  font-family:'DM Sans', sans-serif; font-size:15px; font-weight:500;
+  cursor:pointer; transition:all 0.25s var(--ease-out);
+  letter-spacing:0.3px;
+}
+.btn:active { transform:scale(0.98); }
+.btn:disabled { opacity:0.32; cursor:not-allowed; }
+
+.btn-primary   { background:var(--lacquer); color:var(--paper); box-shadow:0 8px 32px var(--lacquer-glow); }
+.btn-primary:hover { background:var(--lacquer2); }
+
+.btn-gold      { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--ink); font-weight:700; }
+
+.btn-outline   { background:transparent; border:1px solid var(--border-g); color:var(--paper); }
+
+.btn-ghost     { background:transparent; border:1px solid var(--border); color:var(--muted); font-size:13px; }
+
+.btn-sm {
+  padding:10px 16px; border-radius:10px; font-size:13px;
+  font-family:'DM Mono', monospace; letter-spacing:1px;
+  text-transform:uppercase; font-weight:500;
+}
+
+/* Progress track */
+.prog-track {
+  display:flex; gap:4px;
+}
+.prog-node {
+  flex:1; height:3px; border-radius:2px;
+  background:rgba(237,230,214,0.08); transition:all 0.4s;
+}
+.prog-node.done { background:var(--gold); }
+.prog-node.now  { background:var(--lacquer2); animation:nodePulse 1.6s ease-in-out infinite; }
+@keyframes nodePulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* Animations */
+@keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn  { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+@keyframes slideRight { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+@keyframes popIn    { from{opacity:0;transform:scale(0) rotate(-15deg)} to{opacity:1;transform:scale(1) rotate(0deg)} }
+@keyframes shimmer  { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@keyframes float    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes breathe  { 0%,100%{box-shadow:0 0 40px var(--lacquer-glow)} 50%{box-shadow:0 0 80px var(--lacquer-glow),0 0 120px rgba(153,27,27,0.15)} }
+
+.fu  { animation:fadeUp 0.5s var(--ease-out) both; }
+.fi  { animation:fadeIn 0.4s ease both; }
+.si  { animation:scaleIn 0.4s var(--ease-spring) both; }
+.sr  { animation:slideRight 0.4s var(--ease-out) both; }
+.d1  { animation-delay:0.07s; }
+.d2  { animation-delay:0.14s; }
+.d3  { animation-delay:0.21s; }
+.d4  { animation-delay:0.28s; }
+.d5  { animation-delay:0.35s; }
+.d6  { animation-delay:0.42s; }
+
+/* ════════════════════════════════════════
+   SCREEN 1: ROLE SELECT
+════════════════════════════════════════ */
+#roleScreen {
+  background:var(--ink);
+  align-items:stretch; justify-content:flex-end;
+  padding:0;
+}
+
+.role-hero {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:60px 32px 20px; position:relative;
+  overflow:hidden;
+}
+
+.role-bg-kanji {
+  position:absolute;
+  font-family:'Playfair Display', serif;
+  font-size:320px; font-weight:900;
+  color:rgba(237,230,214,0.025);
+  line-height:1; pointer-events:none;
+  user-select:none;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  letter-spacing:-20px;
+}
+
+.role-mon {
+  width:88px; height:88px; border-radius:50%;
+  background:var(--lacquer);
+  display:flex; align-items:center; justify-content:center;
+  font-size:40px; margin-bottom:24px;
+  animation:breathe 3s ease-in-out infinite;
+}
+
+.role-brand {
+  font-family:'DM Mono', monospace;
+  font-size:10px; letter-spacing:5px;
+  color:var(--gold); margin-bottom:10px;
+  text-transform:uppercase;
+}
+
+.role-title {
+  font-family:'Playfair Display', serif;
+  font-size:40px; font-weight:900; line-height:1.1;
+  text-align:center; margin-bottom:8px;
+}
+
+.role-title em { color:var(--gold); font-style:italic; display:block; }
+
+.role-sub {
+  font-family:'Playfair Display', serif;
+  font-size:15px; font-style:italic;
+  color:rgba(237,230,214,0.45); text-align:center;
+  line-height:1.7;
+}
+
+.role-cards {
+  padding:20px 20px 40px;
+  display:flex; flex-direction:column; gap:12px;
+  background:var(--ink);
+  flex-shrink:0;
+}
+
+.role-card {
+  background:var(--ink2);
+  border:1px solid var(--border-g);
+  border-radius:18px; padding:20px;
+  display:flex; align-items:center; gap:16px;
+  cursor:pointer; transition:all 0.25s var(--ease-out);
+  position:relative; overflow:hidden;
+}
+.role-card::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(201,152,26,0.05), transparent);
+  opacity:0; transition:opacity 0.25s;
+}
+.role-card:active { transform:scale(0.98); }
+.role-card:active::after { opacity:1; }
+
+.role-card-icon {
+  width:54px; height:54px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; flex-shrink:0;
+}
+.role-card-icon.p { background:rgba(153,27,27,0.15); }
+.role-card-icon.g { background:rgba(201,152,26,0.12); }
+
+.role-card-title {
+  font-family:'Playfair Display', serif;
+  font-size:18px; font-weight:700; margin-bottom:3px;
+}
+
+.role-card-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+
+.role-card-arrow {
+  margin-left:auto; color:var(--muted); font-size:18px; flex-shrink:0;
+}
+
+/* ════════════════════════════════════════
+   SCREEN 2: PARTICIPANT NAME
+════════════════════════════════════════ */
+#nameScreen {
+  background:var(--ink);
+  align-items:center; justify-content:center;
+  padding:40px 28px;
+}
+
+.ns-back {
+  position:absolute; top:20px; left:20px;
+}
+
+.ns-icon { font-size:56px; margin-bottom:20px; animation:float 4s ease-in-out infinite; }
+
+.ns-title {
+  font-family:'Playfair Display', serif;
+  font-size:26px; font-weight:700; margin-bottom:6px; text-align:center;
+}
+
+.ns-sub {
+  font-size:13px; color:var(--muted); text-align:center;
+  line-height:1.6; margin-bottom:32px;
+}
+
+.ns-input {
+  width:100%;
+  background:rgba(237,230,214,0.06);
+  border:1px solid var(--border-g); border-radius:12px;
+  padding:16px 18px; color:var(--paper);
+  font-size:18px; font-family:'DM Sans', sans-serif;
+  text-align:center; letter-spacing:2px;
+  transition:all 0.3s; margin-bottom:16px;
+  outline:none;
+}
+.ns-input:focus { border-color:var(--gold); background:rgba(237,230,214,0.09); box-shadow:0 0 0 3px rgba(201,152,26,0.1); }
+.ns-input::placeholder { color:rgba(237,230,214,0.2); letter-spacing:0; }
+
+.lang-row {
+  display:flex; gap:8px; justify-content:center; margin-bottom:32px;
+}
+.lang-btn {
+  padding:7px 14px; border-radius:20px;
+  border:1px solid var(--border); background:transparent;
+  color:rgba(237,230,214,0.4); font-family:'DM Mono', monospace;
+  font-size:11px; cursor:pointer; transition:all 0.2s;
+}
+.lang-btn.active { background:var(--gold); border-color:var(--gold); color:var(--ink); font-weight:500; }
+
+/* ════════════════════════════════════════
+   SCREEN 3: PARTICIPANT — QUEST PLAY
+════════════════════════════════════════ */
+#playScreen { background:var(--ink); }
+
+.play-bar {
+  padding:14px 18px 12px;
+}
+
+.play-bar-top {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.play-detective {
+  font-family:'DM Mono', monospace;
+  font-size:9px; letter-spacing:2px; color:var(--gold);
+}
+
+.play-spot-count { font-size:11px; color:var(--muted); }
+
+.play-content { padding:20px; }
+
+/* Spot reveal header */
+.spot-reveal {
+  margin-bottom:20px;
+}
+
+.spot-tag {
+  font-family:'DM Mono', monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--lacquer2); text-transform:uppercase; margin-bottom:6px;
+}
+
+.spot-name {
+  font-family:'Playfair Display', serif;
+  font-size:30px; font-weight:900; line-height:1.15;
+  margin-bottom:12px;
+}
+
+/* Story card */
+.story-card {
+  margin-bottom:14px;
+}
+
+.story-label {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:2px;
+  color:var(--muted); text-transform:uppercase; margin-bottom:8px;
+}
+
+.story-body {
+  font-family:'Playfair Display', serif;
+  font-size:17px; font-style:italic; line-height:1.85;
+  color:rgba(237,230,214,0.82);
+}
+
+/* Mission card */
+.mission-card {
+  background:rgba(153,27,27,0.1);
+  border:1px solid rgba(153,27,27,0.25);
+  border-radius:14px; padding:18px; margin-bottom:14px;
+}
+
+.mission-label {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:2px;
+  color:var(--lacquer2); text-transform:uppercase; margin-bottom:8px;
+}
+
+.mission-text { font-size:14px; line-height:1.75; }
+
+/* Hint */
+.hint-btn {
+  display:flex; align-items:center; gap:8px;
+  background:none; border:none; color:var(--muted);
+  font-size:12px; cursor:pointer;
+  font-family:'DM Sans', sans-serif;
+  padding:8px 0; width:100%; text-align:left;
+  transition:color 0.2s;
+}
+.hint-btn:hover { color:var(--gold); }
+
+.hint-body {
+  display:none; margin-bottom:14px;
+  padding:14px; border-radius:12px;
+  background:rgba(201,152,26,0.07);
+  border:1px solid rgba(201,152,26,0.18);
+  font-size:13px; color:rgba(237,230,214,0.65); line-height:1.7;
+}
+.hint-body.open { display:block; animation:fadeIn 0.3s ease; }
+
+/* Camera zone */
+.camera-label {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:2px; color:var(--gold);
+  text-transform:uppercase; display:block; margin-bottom:10px;
+}
+
+.camera-zone {
+  border:1.5px dashed rgba(201,152,26,0.3);
+  border-radius:16px; overflow:hidden; cursor:pointer;
+  transition:all 0.3s; margin-bottom:16px;
+  background:rgba(237,230,214,0.02);
+  min-height:200px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:10px;
+}
+.camera-zone:active { border-color:var(--gold); background:rgba(201,152,26,0.05); }
+.camera-zone.filled { min-height:0; border-style:solid; border-color:var(--gold); }
+
+.cz-icon { font-size:40px; }
+.cz-text { font-size:13px; color:var(--muted); text-align:center; line-height:1.6; }
+.cz-sub  { font-size:10px; color:rgba(237,230,214,0.2); }
+
+.cz-preview {
+  width:100%; display:none; object-fit:cover;
+  border-radius:14px; max-height:300px;
+}
+.camera-zone.filled .cz-preview   { display:block; }
+.camera-zone.filled .cz-placeholder { display:none; }
+
+/* Fixed action bar */
+.play-action-bar {
+  padding:14px 20px 28px;
+  background:rgba(9,8,12,0.96);
+  border-top:1px solid var(--border-g);
+  backdrop-filter:blur(16px);
+  flex-shrink:0;
+}
+
+/* ════════════════════════════════════════
+   SCREEN 4: GUIDE MODE
+════════════════════════════════════════ */
+#guideScreen { background:var(--ink); }
+
+.guide-bar {
+  padding:14px 18px 12px;
+}
+
+.guide-bar-top {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.guide-mode-label {
+  font-family:'DM Mono', monospace;
+  font-size:9px; letter-spacing:2px; color:var(--gold);
+}
+
+.guide-spot-name {
+  font-family:'Playfair Display', serif;
+  font-size:14px; font-weight:700; color:var(--paper);
+}
+
+.guide-content { padding:20px; }
+
+/* Phase nav */
+.phase-nav {
+  display:flex; gap:0;
+  background:rgba(237,230,214,0.05);
+  border:1px solid var(--border-g);
+  border-radius:12px; padding:4px;
+  margin-bottom:20px;
+}
+
+.phase-btn {
+  flex:1; padding:10px 4px; border-radius:9px;
+  background:none; border:none; cursor:pointer;
+  transition:all 0.2s; color:var(--muted);
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:0.5px;
+  text-align:center; line-height:1.4;
+  text-transform:uppercase;
+}
+
+.phase-btn.active {
+  background:var(--lacquer); color:var(--paper);
+  box-shadow:0 2px 10px var(--lacquer-glow);
+}
+
+.phase-section { display:none; }
+.phase-section.active { display:block; }
+
+/* Script blocks */
+.script-block {
+  margin-bottom:14px;
+  border-radius:14px; padding:16px 16px 16px 20px;
+  position:relative; overflow:hidden;
+  background:rgba(237,230,214,0.03);
+  border:1px solid var(--border);
+}
+.script-block::before {
+  content:''; position:absolute;
+  left:0; top:0; bottom:0; width:3px;
+  border-radius:3px 0 0 3px;
+}
+.script-block.red::before    { background:var(--lacquer2); }
+.script-block.gold::before   { background:var(--gold); }
+.script-block.green::before  { background:var(--green2); }
+
+.sb-label {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:8px;
+}
+.sb-label.red   { color:var(--lacquer2); }
+.sb-label.gold  { color:var(--gold); }
+.sb-label.green { color:#4ADE80; }
+
+.sb-text {
+  font-family:'Playfair Display', serif;
+  font-size:16px; line-height:1.8; color:var(--paper);
+}
+
+.sb-meta { font-size:12px; color:var(--muted); line-height:1.6; }
+
+/* Timer */
+.timer-wrap {
+  background:var(--ink2); border:1px solid var(--border-g);
+  border-radius:14px; padding:16px;
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:14px;
+}
+
+.timer-digits {
+  font-family:'DM Mono', monospace;
+  font-size:36px; font-weight:500; color:var(--gold);
+  letter-spacing:2px; flex-shrink:0; min-width:90px;
+  transition:color 0.3s;
+}
+.timer-digits.urgent { color:var(--lacquer2); animation:nodePulse 0.8s infinite; }
+
+.timer-btns { display:flex; gap:8px; flex:1; }
+.timer-btn {
+  flex:1; padding:11px; border-radius:9px;
+  border:1px solid var(--border); background:rgba(237,230,214,0.05);
+  color:var(--paper); font-size:15px; cursor:pointer; transition:all 0.2s;
+}
+.timer-btn.go    { background:rgba(21,128,61,0.2); border-color:rgba(21,128,61,0.4); }
+.timer-btn.stop  { background:rgba(153,27,27,0.2); border-color:rgba(153,27,27,0.3); }
+.timer-btn:active { transform:scale(0.95); }
+
+/* Submissions */
+.submissions { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+
+.sub-card {
+  background:var(--ink2); border:2px solid rgba(201,152,26,0.12);
+  border-radius:14px; overflow:hidden; cursor:pointer;
+  transition:all 0.25s;
+  position:relative;
+  -webkit-user-select:none; user-select:none;
+}
+.sub-card:active { transform:scale(0.98); background:rgba(201,152,26,0.05); }
+.sub-card.selected { border-color:var(--gold); box-shadow:0 0 24px rgba(201,152,26,0.18); }
+.sub-card.winner   { border-color:var(--gold); background:rgba(201,152,26,0.07); }
+
+.sub-photo {
+  width:100%; height:150px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(237,230,214,0.03); font-size:52px; overflow:hidden;
+}
+.sub-photo img { width:100%; height:100%; object-fit:cover; }
+
+.sub-row {
+  padding:12px 14px; display:flex;
+  align-items:center; justify-content:space-between;
+}
+
+.sub-name {
+  font-family:'Playfair Display', serif;
+  font-size:15px; font-weight:700;
+}
+.sub-meta { font-size:10px; color:var(--muted); margin-top:1px; }
+
+.crown-btn {
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(201,152,26,0.1); border:1px solid var(--border-g);
+  font-size:18px; cursor:pointer; transition:all 0.2s;
+  display:flex; align-items:center; justify-content:center;
+}
+.crown-btn.active { background:var(--gold); box-shadow:0 0 20px rgba(201,152,26,0.4); transform:scale(1.08); }
+
+.winner-tag {
+  position:absolute; top:10px; right:10px;
+  background:var(--gold); color:var(--ink);
+  font-family:'DM Mono', monospace;
+  font-size:8px; font-weight:500; letter-spacing:1px;
+  padding:3px 10px; border-radius:10px; display:none;
+}
+.sub-card.winner .winner-tag { display:block; }
+
+/* Guide fixed bottom */
+.guide-action-bar {
+  padding:14px 20px 28px;
+  background:rgba(9,8,12,0.96);
+  border-top:1px solid var(--border-g);
+  backdrop-filter:blur(16px);
+  flex-shrink:0;
+}
+
+.phase-action { display:none; }
+.phase-action.active { display:block; }
+
+/* ════════════════════════════════════════
+   SCREEN 5: WINNER ANNOUNCEMENT
+════════════════════════════════════════ */
+#winnerScreen {
+  background:var(--ink);
+  align-items:stretch;
+}
+
+.winner-glow {
+  position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 35%, rgba(201,152,26,0.1) 0%, transparent 65%);
+  animation:fadeIn 1s ease both;
+}
+
+.confetti-field { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.c-bit {
+  position:absolute; border-radius:2px;
+  animation:confettiFall linear infinite; opacity:0;
+}
+@keyframes confettiFall {
+  0%   { transform:translateY(-10px) rotate(0deg); opacity:1; }
+  100% { transform:translateY(110vh)  rotate(720deg); opacity:0; }
+}
+
+.winner-scroll { width:100%; }
+.winner-body { padding:40px 24px 32px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+
+.w-crown { font-size:72px; margin-bottom:16px; animation:popIn 0.5s var(--ease-spring) both; }
+
+.w-label {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:4px; color:var(--gold);
+  text-transform:uppercase; margin-bottom:10px;
+}
+
+.w-name {
+  font-family:'Playfair Display', serif;
+  font-size:40px; font-weight:900; margin-bottom:6px;
+  text-shadow:0 0 40px rgba(201,152,26,0.4);
+}
+
+.w-award {
+  font-family:'Playfair Display', serif;
+  font-size:18px; font-style:italic;
+  color:var(--gold); margin-bottom:20px;
+}
+
+.w-msg {
+  font-family:'Playfair Display', serif;
+  font-size:15px; font-style:italic;
+  color:rgba(237,230,214,0.6); line-height:1.85;
+  margin-bottom:24px; padding:0 8px;
+}
+
+/* Prize */
+.prize-box {
+  width:100%; background:rgba(201,152,26,0.07);
+  border:1px solid rgba(201,152,26,0.25);
+  border-radius:18px; padding:22px;
+  margin-bottom:20px;
+}
+
+.prize-emoji-display { font-size:36px; margin-bottom:10px; }
+
+.prize-label {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:2px; color:var(--gold);
+  text-transform:uppercase; margin-bottom:8px;
+}
+
+.prize-name  { font-size:17px; font-weight:600; margin-bottom:5px; }
+.prize-desc  { font-size:12px; color:var(--muted); line-height:1.65; }
+
+/* Detectives list */
+.detectives-wrap { width:100%; margin-bottom:24px; }
+
+.det-label {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:2px; color:var(--muted);
+  text-transform:uppercase; text-align:center; margin-bottom:12px;
+}
+
+.det-list { display:flex; flex-direction:column; gap:8px; }
+
+.det-row {
+  display:flex; align-items:center; gap:12px;
+  background:rgba(237,230,214,0.03);
+  border:1px solid var(--border);
+  border-radius:12px; padding:10px 14px;
+}
+
+.det-emoji { font-size:20px; }
+.det-name  { font-size:13px; flex:1; }
+
+.det-badge {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:0.5px;
+  padding:3px 10px; border-radius:10px;
+}
+.det-badge.w  { background:rgba(201,152,26,0.2); color:var(--gold); }
+.det-badge.p  { background:rgba(237,230,214,0.06); color:var(--muted); }
+
+/* Winner fixed bottom */
+.winner-action-bar {
+  padding:14px 20px 28px;
+  background:rgba(9,8,12,0.96);
+  border-top:1px solid var(--border-g);
+  backdrop-filter:blur(16px);
+  flex-shrink:0;
+}
+
+/* ════════════════════════════════════════
+   SCREEN 6: GALLERY
+════════════════════════════════════════ */
+#galleryScreen { background:var(--ink); }
+
+.gallery-bar {
+  padding:16px 20px 14px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+
+.gallery-title {
+  font-family:'Playfair Display', serif;
+  font-size:22px; font-weight:700;
+}
+
+.gallery-count {
+  font-family:'DM Mono', monospace;
+  font-size:9px; color:var(--gold); letter-spacing:1px; margin-top:2px;
+}
+
+.gallery-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:3px; padding:3px;
+}
+
+.gallery-cell {
+  position:relative; aspect-ratio:1; overflow:hidden;
+  background:rgba(237,230,214,0.04); cursor:pointer;
+  transition:opacity 0.2s;
+}
+.gallery-cell:active { opacity:0.8; }
+.gallery-cell-img { width:100%; height:100%; object-fit:cover; display:block; }
+
+.gallery-overlay {
+  position:absolute; bottom:0; left:0; right:0;
+  background:linear-gradient(transparent, rgba(0,0,0,0.72));
+  padding:22px 9px 9px;
+}
+.go-spot { font-family:'DM Mono', monospace; font-size:7px; letter-spacing:1px; color:var(--gold); display:block; }
+.go-name { font-size:10px; display:block; margin-top:1px; }
+
+.gallery-winner-badge {
+  position:absolute; top:8px; right:8px;
+  background:var(--gold); color:var(--ink);
+  font-family:'DM Mono', monospace; font-size:7px; font-weight:500;
+  padding:2px 8px; border-radius:8px;
+}
+
+.gallery-placeholder {
+  position:relative; aspect-ratio:1;
+  background:rgba(237,230,214,0.03);
+  border:1px dashed rgba(201,152,26,0.12);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+}
+.gp-emoji { font-size:28px; opacity:0.35; }
+.gp-name  { font-size:9px; color:var(--muted); text-align:center; padding:0 6px; }
+
+.gallery-empty {
+  grid-column:1/-1; padding:60px 24px; text-align:center;
+}
+.ge-icon  { font-size:48px; margin-bottom:14px; }
+.ge-title { font-family:'Playfair Display', serif; font-size:20px; font-style:italic; margin-bottom:8px; }
+.ge-desc  { font-size:12px; color:var(--muted); line-height:1.7; }
+
+/* ════════════════════════════════════════
+   SCREEN 7: PHOTO FULLSCREEN
+════════════════════════════════════════ */
+#photoScreen {
+  background:rgba(0,0,0,0.97);
+  align-items:center; justify-content:center;
+}
+
+.photo-full-close {
+  position:absolute; top:16px; right:16px; z-index:10;
+  width:38px; height:38px; border-radius:50%;
+  background:rgba(237,230,214,0.1);
+  border:1px solid rgba(237,230,214,0.15);
+  color:var(--paper); font-size:17px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+
+.photo-full-img { max-width:100%; max-height:72vh; object-fit:contain; border-radius:8px; }
+.photo-full-placeholder { font-size:90px; }
+
+.photo-full-info {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:32px 24px 44px;
+  background:linear-gradient(transparent, rgba(0,0,0,0.88));
+  text-align:center;
+}
+
+.pfi-spot {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:3px; color:var(--gold); margin-bottom:6px;
+}
+.pfi-winner {
+  display:inline-block; background:var(--gold); color:var(--ink);
+  font-family:'DM Mono', monospace; font-size:8px; font-weight:500;
+  padding:2px 10px; border-radius:8px; margin-bottom:6px; letter-spacing:1px;
+}
+.pfi-award {
+  font-family:'Playfair Display', serif;
+  font-size:17px; font-style:italic; color:var(--paper);
+}
+
+/* ════════════════════════════════════════
+   SCREEN 8: QUEST FINALE
+════════════════════════════════════════ */
+#finaleScreen {
+  background:var(--ink);
+  align-items:center; justify-content:center;
+  padding:40px 28px; text-align:center;
+}
+
+.finale-envelope {
+  font-size:96px; cursor:pointer;
+  animation:float 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px var(--lacquer-glow));
+  margin-bottom:24px;
+}
+
+.finale-title {
+  font-family:'Playfair Display', serif;
+  font-size:30px; font-weight:900; line-height:1.2; margin-bottom:10px;
+}
+
+.finale-sub {
+  font-family:'Playfair Display', serif;
+  font-size:16px; font-style:italic;
+  color:rgba(237,230,214,0.5); line-height:1.75; margin-bottom:32px;
+}
+
+/* ════════════════════════════════════════
+   SCREEN 9: REVELATION
+════════════════════════════════════════ */
+#revelationScreen { background:var(--ink); }
+
+.rev-items { padding:20px; display:flex; flex-direction:column; gap:14px; }
+
+.rev-item {
+  border-radius:16px; overflow:hidden;
+  border:1px solid rgba(201,152,26,0.1);
+  background:rgba(237,230,214,0.03);
+  opacity:0; transform:translateY(28px);
+  transition:all 0.6s var(--ease-out);
+}
+.rev-item.show { opacity:1; transform:translateY(0); }
+
+.rev-photo {
+  height:140px; display:flex; align-items:center;
+  justify-content:center; font-size:56px;
+  background:rgba(237,230,214,0.02);
+}
+.rev-photo img { width:100%; height:100%; object-fit:cover; }
+
+.rev-mission {
+  font-family:'DM Mono', monospace;
+  font-size:8px; letter-spacing:2px; color:var(--gold);
+  padding:10px 14px 4px;
+}
+
+.rev-caption {
+  font-family:'Playfair Display', serif;
+  font-size:14px; font-style:italic;
+  color:rgba(237,230,214,0.65); line-height:1.7;
+  padding:0 14px 14px; min-height:48px;
+}
+
+.ai-loading {
+  color:var(--gold);
+  font-family:'DM Mono', monospace;
+  font-size:11px; font-style:normal;
+  letter-spacing:1px;
+  animation:aiPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes aiPulse {
+  0%,100% { opacity:0.4; }
+  50%      { opacity:1; }
+}
+
+.rev-footer { padding:20px; border-top:1px solid rgba(201,152,26,0.1); text-align:center; }
+
+.rev-final {
+  font-family:'Playfair Display', serif;
+  font-size:18px; font-style:italic;
+  color:var(--paper); line-height:1.85; margin-bottom:14px;
+}
+
+.rev-answer {
+  font-family:'Playfair Display', serif;
+  font-size:16px; font-weight:700;
+  color:var(--gold); line-height:1.8; margin-bottom:28px;
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+.toast {
+  position:fixed; bottom:28px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:rgba(17,15,22,0.96);
+  border:1px solid var(--border-g);
+  color:var(--paper); border-radius:12px;
+  padding:12px 20px; font-size:13px; z-index:9999;
+  transition:transform 0.35s var(--ease-out);
+  white-space:nowrap; backdrop-filter:blur(16px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ══ 1. ROLE SELECT ══ -->
+<div class="screen active" id="roleScreen">
+  <div class="role-hero">
+    <div class="role-bg-kanji">侍</div>
+    <div class="role-mon fu">⛩</div>
+    <div class="role-brand fu d1">Samuride</div>
+    <div class="role-title fu d2">Quest<br><em>Kyoto</em></div>
+    <div class="role-sub fu d3">A mystery hidden in<br>1,200 years of history.</div>
+  </div>
+  <div class="role-cards">
+    <div class="role-card fu d3" onclick="goParticipant()">
+      <div class="role-card-icon p">🔍</div>
+      <div>
+        <div class="role-card-title">I'm a Participant</div>
+        <div class="role-card-desc">Solve the mystery. Photograph your answers.</div>
+      </div>
+      <div class="role-card-arrow">›</div>
+    </div>
+    <div class="role-card fu d4" onclick="goGuide()">
+      <div class="role-card-icon g">🎭</div>
+      <div>
+        <div class="role-card-title">I'm the Guide</div>
+        <div class="role-card-desc">Scripts, timer, judging & prize reveal.</div>
+      </div>
+      <div class="role-card-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 2. NAME INPUT ══ -->
+<div class="screen" id="nameScreen">
+  <div class="ns-back"><button class="icon-btn" onclick="showScreen('roleScreen')">←</button></div>
+  <div class="ns-icon">🥷</div>
+  <div class="ns-title fu">What's your name,<br>Detective?</div>
+  <div class="ns-sub fu d1">Enter the name you'll use on today's quest.</div>
+  <input class="ns-input fu d2" id="nameInput" type="text" placeholder="Sarah · 田中 · 김민준" maxlength="20" autocomplete="off"/>
+  <div class="lang-row fu d2">
+    <button class="lang-btn active" onclick="setLang('en',this)">🇬🇧 EN</button>
+    <button class="lang-btn" onclick="setLang('ja',this)">🇯🇵 JP</button>
+    <button class="lang-btn" onclick="setLang('ko',this)">🇰🇷 KO</button>
+    <button class="lang-btn" onclick="setLang('zh',this)">🇨🇳 ZH</button>
+  </div>
+  <button class="btn btn-primary fu d3" onclick="startAsParticipant()">Begin the Quest →</button>
+</div>
+
+<!-- ══ 3. PARTICIPANT PLAY ══ -->
+<div class="screen" id="playScreen">
+  <div class="sticky-top play-bar">
+    <div class="play-bar-top">
+      <div class="play-detective" id="playDetective">DETECTIVE</div>
+      <button class="icon-btn" onclick="openGallery()" id="galleryFab" style="display:none">📷</button>
+      <div class="play-spot-count" id="playSpotCount">1 / 6</div>
+    </div>
+    <div class="prog-track" id="playTrack"></div>
+  </div>
+
+  <div class="scrollable">
+    <div class="play-content" id="playContent"></div>
+  </div>
+
+  <div class="play-action-bar">
+    <button class="btn btn-primary" id="playSubmitBtn" onclick="submitAndNext()" disabled>
+      Save & Continue →
+    </button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="skipSpot()">Skip this spot</button>
+  </div>
+</div>
+
+<!-- ══ 4. GUIDE ══ -->
+<div class="screen" id="guideScreen">
+  <div class="sticky-top guide-bar">
+    <div class="guide-bar-top">
+      <div class="guide-mode-label">GUIDE MODE</div>
+      <button class="icon-btn" onclick="openGallery()">📷</button>
+    </div>
+    <div class="prog-track" id="guideTrack"></div>
+  </div>
+
+  <div class="scrollable">
+    <div class="guide-content">
+
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--lacquer2);margin-bottom:4px" id="guideSpotTag">SPOT 01</div>
+          <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:900" id="guideSpotName">花見小路</div>
+        </div>
+        <div id="guideAwardPill" class="pill pill-gold" style="margin-top:6px;flex-shrink:0"></div>
+      </div>
+
+      <!-- Phase tabs -->
+      <div class="phase-nav">
+        <button class="phase-btn active" onclick="switchPhase('explain',this)">📖<br>Script</button>
+        <button class="phase-btn" onclick="switchPhase('shoot',this)">📸<br>Shoot</button>
+        <button class="phase-btn" onclick="switchPhase('judge',this)">👑<br>Judge</button>
+        <button class="phase-btn" onclick="switchPhase('present',this)">🎁<br>Award</button>
+      </div>
+
+      <!-- EXPLAIN -->
+      <div class="phase-section active" id="phase-explain">
+        <div class="script-block red">
+          <div class="sb-label red">📢 Opening Talk — 2 min</div>
+          <div class="sb-text" id="g-open"></div>
+        </div>
+        <div class="script-block gold">
+          <div class="sb-label gold">💡 History & Context</div>
+          <div class="sb-text" id="g-history"></div>
+        </div>
+        <div class="script-block">
+          <div class="sb-label" style="color:var(--muted)">🎯 Key Points</div>
+          <div class="sb-meta" id="g-points"></div>
+        </div>
+        <div style="height:80px"></div>
+      </div>
+
+      <!-- SHOOT -->
+      <div class="phase-section" id="phase-shoot">
+        <div class="script-block gold">
+          <div class="sb-label gold">📸 Read to Participants</div>
+          <div class="sb-text" id="g-mission"></div>
+        </div>
+        <div class="script-block green">
+          <div class="sb-label green">💡 Hint (if asked)</div>
+          <div class="sb-text" id="g-hint"></div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-wrap">
+          <div class="timer-digits" id="timerDisplay">05:00</div>
+          <div class="timer-btns">
+            <button class="timer-btn go"   onclick="timerStart()">▶ Go</button>
+            <button class="timer-btn stop" onclick="timerStop()">⏸</button>
+            <button class="timer-btn"      onclick="timerReset()">↺</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:14px">
+          <div class="sb-label" style="color:var(--muted)">Judging Criteria</div>
+          <div style="font-size:13px;color:var(--paper);line-height:1.6;margin-top:6px" id="g-criteria"></div>
+        </div>
+        <div style="height:80px"></div>
+      </div>
+
+      <!-- JUDGE -->
+      <div class="phase-section" id="phase-judge">
+        <div class="card" style="background:rgba(201,152,26,0.07);border-color:rgba(201,152,26,0.25);margin-bottom:16px">
+          <div class="sb-label gold">Award</div>
+          <div style="font-size:15px;font-weight:600;margin-top:4px" id="g-judge-award"></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px" id="g-judge-criteria"></div>
+        </div>
+        <div class="submissions" id="submissions"></div>
+        <div style="height:80px"></div>
+      </div>
+
+      <!-- PRESENT -->
+      <div class="phase-section" id="phase-present">
+        <div class="script-block gold">
+          <div class="sb-label gold">🎤 Announce — Read aloud</div>
+          <div class="sb-text" id="g-announce"></div>
+        </div>
+        <div class="card" style="background:rgba(153,27,27,0.1);border-color:rgba(153,27,27,0.25);margin-bottom:14px">
+          <div class="sb-label red">🎁 Prize</div>
+          <div style="font-size:28px;margin:8px 0" id="g-prize-emoji"></div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:5px" id="g-prize-name"></div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6" id="g-prize-desc"></div>
+        </div>
+        <div class="card" style="background:rgba(21,128,61,0.08);border-color:rgba(21,128,61,0.25);margin-bottom:14px">
+          <div class="sb-label green">🏅 For Everyone</div>
+          <div style="font-size:13px;color:var(--paper);line-height:1.7;margin-top:6px" id="g-all-script"></div>
+        </div>
+        <div style="height:80px"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Fixed bottom actions -->
+  <div class="guide-action-bar">
+    <div class="phase-action active" id="action-explain">
+      <button class="btn btn-primary" onclick="switchPhaseBtn('shoot')">Explanation done → Start Shooting ▶</button>
+    </div>
+    <div class="phase-action" id="action-shoot">
+      <button class="btn btn-primary" onclick="switchPhaseBtn('judge')">Shooting done → See Photos ▶</button>
+    </div>
+    <div class="phase-action" id="action-judge">
+      <button class="btn btn-gold" id="announceBtn" onclick="doAnnounce()" disabled>👑 Announce Winner</button>
+    </div>
+    <div class="phase-action" id="action-present">
+      <button class="btn btn-primary" onclick="nextSpotFromGuide()" id="guidNextBtn">Next Spot →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 5. WINNER ══ -->
+<div class="screen" id="winnerScreen" style="justify-content:flex-start">
+  <div class="winner-glow"></div>
+  <div class="confetti-field" id="confettiField"></div>
+
+  <div class="scrollable winner-scroll">
+    <div class="winner-body">
+      <div class="w-crown">👑</div>
+      <div class="w-label">Mission Champion</div>
+      <div class="w-name" id="wName">—</div>
+      <div class="w-award" id="wAward">—</div>
+      <div class="w-msg" id="wMsg"></div>
+
+      <div class="prize-box">
+        <div class="prize-emoji-display" id="wPrizeEmoji">🎁</div>
+        <div class="prize-label">Prize</div>
+        <div class="prize-name" id="wPrizeName"></div>
+        <div class="prize-desc" id="wPrizeDesc"></div>
+      </div>
+
+      <div class="detectives-wrap">
+        <div class="det-label">All Detectives</div>
+        <div class="det-list" id="detList"></div>
+      </div>
+
+      <div style="height:90px"></div>
+    </div>
+  </div>
+
+  <div class="winner-action-bar">
+    <button class="btn btn-primary" id="wNextBtn" onclick="afterWinner()">Next Spot →</button>
+  </div>
+</div>
+
+<!-- ══ 6. GALLERY ══ -->
+<div class="screen" id="galleryScreen">
+  <div class="sticky-top gallery-bar">
+    <div>
+      <div class="gallery-title">My Photos</div>
+      <div class="gallery-count" id="galleryCount">0 shots</div>
+    </div>
+    <button class="icon-btn" onclick="closeGallery()">✕</button>
+  </div>
+  <div class="scrollable">
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ══ 7. PHOTO FULLSCREEN ══ -->
+<div class="screen" id="photoScreen">
+  <button class="photo-full-close" onclick="showScreen('galleryScreen')">✕</button>
+  <div id="pfContent"><div class="photo-full-placeholder">📷</div></div>
+  <div class="photo-full-info">
+    <div class="pfi-spot" id="pfSpot"></div>
+    <div class="pfi-winner" id="pfWinnerBadge" style="display:none">👑 WINNER</div>
+    <div class="pfi-award" id="pfAward"></div>
+  </div>
+</div>
+
+<!-- ══ GUIDE COMPLETE ══ -->
+<div class="screen" id="guideCompleteScreen" style="background:var(--ink);align-items:stretch;">
+  <div class="scrollable">
+    <div style="padding:48px 24px 32px;display:flex;flex-direction:column;align-items:center;text-align:center">
+
+      <div style="font-size:72px;margin-bottom:20px;animation:popIn 0.5s var(--ease-spring) both">🏯</div>
+
+      <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:4px;color:var(--gold);margin-bottom:10px;text-transform:uppercase">
+        Tour Complete
+      </div>
+
+      <div style="font-family:Playfair Display,serif;font-size:32px;font-weight:900;line-height:1.2;margin-bottom:10px">
+        全スポット<br><em style="color:var(--gold);font-style:italic">完了！</em>
+      </div>
+
+      <div style="font-family:Playfair Display,serif;font-size:15px;font-style:italic;color:rgba(237,230,214,0.55);line-height:1.8;margin-bottom:32px;padding:0 8px">
+        お疲れ様でした。<br>今日のツアーの記録です。
+      </div>
+
+      <!-- 受賞者一覧 -->
+      <div style="width:100%;margin-bottom:28px">
+        <div style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:14px">
+          今日の受賞者
+        </div>
+        <div id="gcWinnerHistory"></div>
+      </div>
+
+      <!-- ガイドへのメッセージ -->
+      <div style="width:100%;background:rgba(201,152,26,0.07);border:1px solid rgba(201,152,26,0.25);border-radius:18px;padding:22px;margin-bottom:28px">
+        <div style="font-size:28px;margin-bottom:10px">📸</div>
+        <div style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:8px">次のステップ</div>
+        <div style="font-size:13px;color:rgba(237,230,214,0.75);line-height:1.7">
+          参加者への写真販売を忘れずに。<br>
+          QRコードを送って今日の思い出を届けましょう。
+        </div>
+      </div>
+
+      <div style="height:100px"></div>
+    </div>
+  </div>
+
+  <!-- 固定フッター -->
+  <div style="padding:14px 20px 28px;background:rgba(9,8,12,0.96);border-top:1px solid rgba(201,152,26,0.2);backdrop-filter:blur(16px);flex-shrink:0;display:flex;flex-direction:column;gap:10px">
+    <button class="btn btn-gold" onclick="toast('📸 写真販売ページを開きます')">
+      📸 写真を販売する
+    </button>
+    <button class="btn btn-outline" onclick="showScreen('roleScreen')">
+      ← トップに戻る
+    </button>
+  </div>
+</div>
+
+<!-- ══ 8. FINALE (Participant only) ══ -->
+<div class="screen" id="finaleScreen" style="align-items:center;justify-content:center;padding:40px 28px;text-align:center;background:var(--ink)">
+  <div class="finale-envelope" onclick="openRevelation()">✉️</div>
+  <div class="finale-title fu">All Mysteries<br>Solved.</div>
+  <div class="finale-sub fu d1">One secret remains.<br>Tap the envelope to discover<br>Kyoto's greatest truth.</div>
+  <button class="btn btn-primary fu d2" style="max-width:280px" onclick="openRevelation()">Open the Envelope →</button>
+</div>
+
+<!-- ══ 9. REVELATION ══ -->
+<div class="screen" id="revelationScreen" style="background:#09080C">
+  <div class="scrollable">
+    <div class="rev-items" id="revItems"></div>
+    <div class="rev-footer">
+      <div class="rev-final">
+        "今日あなたは京都の謎を解こうとして<br>
+        石畳を見つめ、鳥居を通して光を探し、<br>
+        川面に不可能を映し、<br>
+        木の記憶に触れた。"
+      </div>
+      <div class="rev-answer">
+        "京都の最大の謎は<br>街そのものではなかった。<br><br>
+        それは <em style="color:var(--gold)">答えを探し続けたあなた自身</em> だった。"
+      </div>
+      <button class="btn btn-gold" style="margin-bottom:10px" onclick="toast('📸 Opening photo purchase...')">Get All Photos — ¥3,500</button>
+      <button class="btn btn-outline" style="margin-bottom:10px" onclick="toast('📱 #SAMURIDEquest')">Share #SAMURIDEquest</button>
+      <button class="btn btn-ghost" onclick="showScreen('roleScreen')">← Back to Start</button>
+      <div style="height:28px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+/* ════════════════════════════════════════
+   SPOTS DATA
+════════════════════════════════════════ */
+const SPOTS = [
+  {
+    id:1, emoji:'🏮', name:'Hanamikoji Street', nameJa:'花見小路',
+    award:'Most Creative Photo',     awardJa:'最も創造的な写真賞',      awardEmoji:'🎨',
+    open:'「みなさん、この通りは200年間変わっていません。江戸時代の商人が歩いたこの石畳に、今あなたたちの足が触れています。今日は7つの謎を解く探偵として歩いてください。」',
+    history:'花見小路は祇園の中心地。今も現役で営業するお茶屋が並ぶ世界でも珍しい通りです。すべての建物が100年以上の歴史を持っています。',
+    points:'・まず全体を見渡し、次に細部を見る\n・観光客が見ない場所（足元・軒下・壁）に注目させる\n・「気づいた瞬間」を大切に',
+    mission:'「この通りのどこかに、100年以上存在するものがあります。それを見つけて、まるで芸術作品のように撮影してください。」',
+    hint:'「石畳を見てください。格子窓を見てください。古い木に刻まれた漢字を探してください。」',
+    criteria:'独創性・構図の美しさ・「発見」の感動が伝わるか',
+    announce:'「この写真を見てください。この方は江戸時代の画家が見ても美しいと思うような一枚を撮りました。みなさん、拍手を！」',
+    allScript:'「全員が素晴らしい視点を持っていました。探偵の目が確実に鍛えられています。」',
+    prize:'Gion Washi Origami / 祇園の和紙折り紙', prizeEmoji:'🌸',
+    prizeDesc:'400年以上の和紙の伝統から生まれた作品です。',
+    storyText:'This street has not changed in 200 years. Every stone, every shadow, every doorway holds a secret that most tourists walk past without ever noticing.',
+    storyTextJa:'この通りは200年間変わっていません。すべての石、すべての影、すべての扉に、観光客が気づかずに通り過ぎる秘密があります。',
+    missionText:'Find something that has existed for over 100 years and photograph it as if it were a work of art.',
+    missionTextJa:'100年以上存在するものを見つけて、芸術作品のように撮影してください。',
+    hintText:'Look down at the stone pavement. Look up at the wooden lattice windows. Search for kanji carved into old wood.',
+    hintTextJa:'石畳を見てください。木製の格子窓を見てください。古い木に刻まれた漢字を探してください。',
+    timerSec:300
+  },
+  {
+    id:2, emoji:'👘', name:'Maiko District', nameJa:'置屋の前',
+    award:'Deepest Observation',      awardJa:'最も深い観察賞',          awardEmoji:'👁',
+    open:'「今から皆さんに舞妓の視点に立ってもらいます。彼女は5年間毎朝この道を歩く練習をします。なぜ特定の一点だけを見て歩くか——その答えを考えながら観察してください。」',
+    history:'舞妓は13〜15歳で入門し着物・踊り・三味線・お茶・歩き方を5年修行します。着物は非常に歩きにくく転ばないよう常に足元を意識します。',
+    points:'・舞妓が何を見ているか推理させる\n・答えは「石畳・足元」\n・観察する行為そのものを体感させる',
+    mission:'「舞妓がこの通りを歩く時に見るものを撮影してください。彼女の視点から世界を見せてください。」',
+    hint:'「舞妓は着物を着ています。転ばないためには何を注意深く見る必要がありますか？」',
+    criteria:'「舞妓の視点」が伝わるか・観察の深さ・普通とは違うアングル',
+    announce:'「この方は舞妓が5年かけて磨く観察眼を、たった5分で持ちました。本物の探偵です。」',
+    allScript:'「舞妓が見ているものを自分の目で探した。それだけで、この通りの見え方が永遠に変わりましたね。」',
+    prize:'Kyoto Wooden Charm / 木のお守り', prizeEmoji:'🪵',
+    prizeDesc:'京都の職人が手彫りした小さなお守り。500年の職人文化があなたのポケットに。',
+    storyText:'A maiko practices walking for 5 years. She never looks at the crowd — only one place, for one reason. Can you discover what she sees?',
+    storyTextJa:'舞妓は5年間、毎朝この道を歩く練習をします。群衆を見ません。ある理由で、ある一点だけを見ます。',
+    missionText:'Photograph what a maiko watches when she walks this street. Show the world through her eyes.',
+    missionTextJa:'舞妓がこの通りを歩く時に見るものを撮影してください。彼女の視点から世界を見せてください。',
+    hintText:'She wears a kimono that is very difficult to walk in. What must she watch carefully to avoid falling?',
+    hintTextJa:'彼女は着物を着ていて、非常に歩きにくい。転ばないために何を注意深く見る必要があるか考えてください。',
+    timerSec:300
+  },
+  {
+    id:3, emoji:'⛩', name:'Yasaka Shrine', nameJa:'八坂神社',
+    award:'Most Beautiful Composition', awardJa:'最も美しい構図賞',     awardEmoji:'📸',
+    open:'「この鳥居をただの門として見ないでください。二つの世界の境界線です。1400年前、疫病が京都を襲った時、人々はここで神に祈り続けました。」',
+    history:'八坂神社は祇園祭の発祥地。疫病退散の祈りから生まれた祭りが1100年続いています。鳥居は神の領域と人の世界の境界を示します。',
+    points:'・鳥居を「額縁」として使う発想を伝える\n・全員が同じ構図にならないよう「意外なもの」を強調\n・低アングル・逆光も試すよう促す',
+    mission:'「鳥居を額縁として使ってください。その中を通して、意外なものを撮影してください。他の全員が撮るものではないものを。」',
+    hint:'「低く見てください。高く見てください。カメラを回してください。最高のショットはあなたの後ろにあるかもしれません。」',
+    criteria:'構図の美しさ・独創性・光の使い方',
+    announce:'「この構図は1400年の参拝者が歩き過ぎてきた場所の美しさを見つけました。神様も見惚れているでしょう。」',
+    allScript:'「全員が違う鳥居の世界を見つけました。1400年の歴史が今日それぞれの写真の中に生きています。」',
+    prize:'Yasaka Shrine Omamori / 御守り', prizeEmoji:'🧧',
+    prizeDesc:'神職の方々が祈りを込めた本物の御守り。旅の守護と幸運を。',
+    storyText:'This shrine has stood for 1,400 years. The torii gate is not just a gate — it is a threshold between two worlds.',
+    storyTextJa:'この神社は1400年間立ち続けています。鳥居はただの門ではなく——二つの世界の境界線です。',
+    missionText:'Use the torii gate as a frame. Capture something unexpected through it — not what everyone else photographs.',
+    missionTextJa:'鳥居を額縁として使い、意外なものを撮影してください。他の全員が撮るものではないものを。',
+    hintText:'Look low. Look high. Turn your camera. The best shot might be behind you.',
+    hintTextJa:'低く見てください。高く見てください。カメラを回してください。最高のショットはあなたの後ろにあるかもしれません。',
+    timerSec:360
+  },
+  {
+    id:4, emoji:'🌊', name:'Shirakawa Canal', nameJa:'白川',
+    award:'Most Poetic Expression',   awardJa:'最も詩的な表現賞',       awardEmoji:'🌊',
+    open:'「この川は200年間、一秒も止まらずに流れています。侍を映し、天皇を映し、今日はあなたたちを映しています。今のこの反射は世界で二度と現れません。」',
+    history:'白川は江戸時代から変わらぬ景観を保ちます。柳と石橋の組み合わせは浮世絵にも描かれました。',
+    points:'・「不可能な写真」という言葉で創造性を刺激\n・波紋・光の屈折・リフレクションに注目させる\n・「現実にないものを映す」発想を伝える',
+    mission:'「水の反射の中に、現実には存在しないものを捉えてください。不可能な写真を作ってください。」',
+    hint:'「波紋が反射を歪めます。光の角度が幻想を作ります。あなたが見るものは決して真実ではありません。」',
+    criteria:'詩的な表現・創造性・「不可能」への挑戦',
+    announce:'「この方は不可能を写真に収めました。現実と夢の境界を消す一枚です。」',
+    allScript:'「白川は今日、全員の視点を映しました。その反射は今頃、海まで流れています。」',
+    prize:'Shirakawa Stone + Message / 白川の石', prizeEmoji:'🪨',
+    prizeDesc:'"この石は200年の水が作った形です。今日の京都があなたを作ったように。"',
+    storyText:'This canal has flowed for 200 years without stopping. The water never repeats. Each reflection lasts only a moment.',
+    storyTextJa:'この川は200年間流れ続け、侍も天皇も映してきました。水は決して同じ反射を繰り返しません。',
+    missionText:'Capture something in the water\'s reflection that does NOT exist in reality. Create an impossible photograph.',
+    missionTextJa:'水の反射の中に、現実には存在しないものを捉えてください。不可能な写真を作ってください。',
+    hintText:'Ripples distort reflections. Light creates illusions. What you see is never the full truth.',
+    hintTextJa:'波紋が反射を歪めます。光の角度が幻想を作ります。あなたが見るものは決して真実ではありません。',
+    timerSec:300
+  },
+  {
+    id:5, emoji:'🪷', name:'Kennin-ji Temple', nameJa:'建仁寺',
+    award:'Most Philosophical',       awardJa:'最も哲学的な答え賞',     awardEmoji:'🧘',
+    open:'「禅の師匠がこの庭を作る時、一つの問いを込めました——片手の音はどんな音か？正解はありません。この庭の前に立ち、その問いと共に5分間過ごしてください。」',
+    history:'建仁寺は1202年創建、京都最古の禅寺のひとつ。枯山水の庭は石と砂で山と海を表現します。石の数は必ず奇数——完成を嫌う禅の思想から。',
+    points:'・「音を撮る」という矛盾で考えさせる\n・沈黙・静寂・空間の形を表現させる\n・砂紋・石の影・光と影の境界を提案',
+    mission:'「この庭の「音」を写真で撮ってください。耳では聞こえないものを捉えてください。」',
+    hint:'「禅は行うことではなく、行わないことについてです。沈黙には形があります。静けさには色があります。」',
+    criteria:'哲学的な深さ・「聞こえない音」の表現・独自の解釈',
+    announce:'「この方は答えのない問いに、写真で答えました。禅の師匠が見たら、弟子に取るかもしれません。」',
+    allScript:'「全員がそれぞれの音を見つけました。この庭は今日、6つの異なる沈黙を持ちました。」',
+    prize:'Zen Wooden Plaque / 禅語の木札', prizeEmoji:'🪷',
+    prizeDesc:'"一期一会" ——一つの時、一つの出会い。この瞬間は二度と訪れません。',
+    storyText:'Zen masters created this garden to ask: "What is the sound of one hand clapping?" There is no correct answer.',
+    storyTextJa:'禅の師匠たちはこの庭を一つの問いのために作りました：「片手の音はどんな音か？」正解はありません。',
+    missionText:'Photograph the "sound" of this garden. Capture something you cannot hear with your ears.',
+    missionTextJa:'この庭の「音」を写真で撮ってください。耳では聞こえないものを捉えてください。',
+    hintText:'Zen is about not-doing. Silence has a shape. Stillness has a color.',
+    hintTextJa:'禅は行わないことについてです。沈黙には形があります。静けさには色があります。',
+    timerSec:360
+  },
+  {
+    id:6, emoji:'🌸', name:'Maruyama Park', nameJa:'円山公園',
+    award:'Most Emotional Photo',     awardJa:'最も感情的な一枚賞',     awardEmoji:'❤️',
+    open:'「この公園に樹齢280年のしだれ桜があります。侍の決闘、明治維新、戦争、花見を目撃してきました。今から、その木に触れてください。そして目を閉じてください。」',
+    history:'祇園の夜桜として知られ京都を代表する桜のひとつ。木に触れることは280年の時間に触れることです。',
+    points:'・必ず「目を閉じて触れる」体験を先にさせる\n・写真の対象は「木」ではなく「感情」\n・この瞬間がSAMURIDEが撮影する最高の場面',
+    mission:'「木に触れてください。そして、その瞬間に感じた感情を撮影してください。木ではなく、感情そのものを。」',
+    hint:'「目を閉じてください。手の下の280年を感じてください。目を開けたとき、見えるものを撮影してください。」',
+    criteria:'感情の深さ・「瞬間」の捉え方・見る人の心を動かすか',
+    announce:'「280年間、この木は多くの人間を見てきました。しかしこの方が触れた瞬間の顔は——おそらく初めて見る種類の美しさでした。」',
+    allScript:'「全員の手が今日、280年の京都に触れました。あなたたちの体に、その記憶が残っています。」',
+    prize:'Instant Polaroid Print / ポラロイド写真', prizeEmoji:'📷',
+    prizeDesc:'SAMURIDEが撮影したあなたのベストショット。今この瞬間だけのために。',
+    storyText:'The great weeping cherry tree is 280 years old. It has witnessed samurai, emperors, wars, and festivals. It tells nothing.',
+    storyTextJa:'このしだれ桜は樹齢280年。侍の決闘も、戦争も、花見も、すべてを見てきました。そして今——あなたを見ています。',
+    missionText:'Touch the ancient tree. Then photograph the emotion you feel in that moment — not the tree itself.',
+    missionTextJa:'木に触れてください。そして、その瞬間に感じた感情を撮影してください。木ではなく、感情そのものを。',
+    hintText:'Close your eyes first. Feel 280 years under your hand. When you open your eyes, photograph what you see.',
+    hintTextJa:'目を閉じてください。手の下の280年を感じてください。目を開けたとき、見えるものを撮影してください。',
+    timerSec:300
+  }
+];
+
+const DEMO_PARTICIPANTS = [
+  {name:'Sarah',   emoji:'👩🏼'},
+  {name:'Yuki',    emoji:'👩🏻'},
+  {name:'James',   emoji:'👨🏾'},
+  {name:'Min-jun', emoji:'🧑🏻'},
+];
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let appMode = 'participant'; // participant | guide
+let myName  = '';
+let myLang  = 'en';
+let spotIdx = 0;
+let selectedWinner = null;
+let photoGallery = [];  // {spotIdx, photo, isWinner}
+let submittedPhoto = null;
+let galleryPrev = 'playScreen';
+let winnerHistory = [];  // {spot, name}
+
+let timerInterval = null;
+let timerRunning  = false;
+let timerSec      = 300;
+
+/* ════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.scrollable').forEach(b => b.scrollTop = 0);
+}
+
+function goParticipant() { appMode = 'participant'; showScreen('nameScreen'); }
+
+function goGuide() {
+  appMode = 'guide';
+  spotIdx = 0;
+  selectedWinner = null;
+  renderGuide();
+  showScreen('guideScreen');
+}
+
+/* ════════════════════════════════════════
+   LANGUAGE
+════════════════════════════════════════ */
+const LANG = {
+  en: { story:'The Story', mission:'Your Mission', hint:'💡 Need a hint?', photo:'Capture Your Answer',
+        upload:'Tap to photograph your answer', submit:'Save & Continue →', skip:'Skip this spot',
+        waiting:'Awaiting judgement...', waitSub:'Your photo has been submitted.' },
+  ja: { story:'ストーリー', mission:'ミッション', hint:'💡 ヒントが欲しい', photo:'答えを撮影',
+        upload:'タップして撮影する', submit:'提出して次へ →', skip:'スキップ',
+        waiting:'判定中...', waitSub:'写真を提出しました。' },
+  ko: { story:'이야기', mission:'미션', hint:'💡 힌트가 필요해요', photo:'사진으로 답하기',
+        upload:'탭하여 촬영', submit:'제출하고 계속 →', skip:'건너뛰기',
+        waiting:'심사 중...', waitSub:'사진이 제출되었습니다.' },
+  zh: { story:'故事', mission:'任务', hint:'💡 需要提示', photo:'拍下你的答案',
+        upload:'点击拍摄', submit:'提交并继续 →', skip:'跳过',
+        waiting:'等待评判...', waitSub:'照片已提交。' },
+};
+
+function t(k) { return (LANG[myLang]||LANG.en)[k] || LANG.en[k] || k; }
+function isJa() { return myLang === 'ja'; }
+
+function setLang(l, btn) {
+  myLang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ════════════════════════════════════════
+   START PARTICIPANT
+════════════════════════════════════════ */
+function startAsParticipant() {
+  const n = document.getElementById('nameInput').value.trim();
+  if (!n) {
+    const el = document.getElementById('nameInput');
+    el.focus(); el.style.borderColor='var(--lacquer2)';
+    setTimeout(()=>el.style.borderColor='',1500); return;
+  }
+  myName  = n;
+  spotIdx = 0;
+  submittedPhoto = null;
+  renderParticipant();
+  showScreen('playScreen');
+}
+
+/* ════════════════════════════════════════
+   PARTICIPANT RENDER
+════════════════════════════════════════ */
+function renderParticipant() {
+  const sp = SPOTS[spotIdx];
+  const ja = isJa();
+
+  // Header
+  document.getElementById('playDetective').textContent = `DET. ${myName.toUpperCase()}`;
+  document.getElementById('playSpotCount').textContent  = `${spotIdx+1} / ${SPOTS.length}`;
+
+  // Progress
+  const track = document.getElementById('playTrack');
+  track.innerHTML = '';
+  SPOTS.forEach((_,i)=>{
+    const n = document.createElement('div');
+    n.className = `prog-node ${i<spotIdx?'done':i===spotIdx?'now':''}`;
+    track.appendChild(n);
+  });
+
+  // Gallery FAB
+  const fab = document.getElementById('galleryFab');
+  fab.style.display = photoGallery.length > 0 ? 'flex' : 'none';
+
+  // Submit button
+  const existing = photoGallery.find(p=>p.spotIdx===spotIdx);
+  const btn = document.getElementById('playSubmitBtn');
+  btn.disabled = !existing;
+  btn.textContent = existing ? '✓ Saved — Continue ▶' : t('submit');
+  if (existing) {
+    btn.style.background = 'var(--green2)';
+    btn.style.boxShadow  = 'none';
+  } else {
+    btn.style.background = '';
+    btn.style.boxShadow  = '';
+  }
+
+  // Content
+  const c = document.getElementById('playContent');
+  c.innerHTML = `
+    <div class="spot-reveal">
+      <div class="spot-tag fu">SPOT ${String(sp.id).padStart(2,'0')}</div>
+      <div class="spot-name fu d1">${sp.emoji} ${ja ? sp.nameJa : sp.name}</div>
+      <span class="pill pill-gold fu d1">${sp.awardEmoji} ${ja ? sp.awardJa : sp.award}</span>
+    </div>
+
+    <div class="story-card card-lined line-gold fu d2">
+      <div class="story-label">${t('story')}</div>
+      <div class="story-body">"${ja ? sp.storyTextJa : sp.storyText}"</div>
+    </div>
+
+    <div class="mission-card fu d2">
+      <div class="mission-label">${t('mission')}</div>
+      <div class="mission-text">${ja ? sp.missionTextJa : sp.missionText}</div>
+    </div>
+
+    <button class="hint-btn fu d3" onclick="toggleHint(this)">
+      ${t('hint')} ▾
+    </button>
+    <div class="hint-body">${ja ? sp.hintTextJa : sp.hintText}</div>
+
+    <span class="camera-label fu d3">${t('photo')}</span>
+    <div class="camera-zone fu d3 ${existing ? 'filled' : ''}" id="cameraZone"
+         onclick="document.getElementById('fileIn').click()">
+      <div class="cz-placeholder" ${existing?'style="display:none"':''}>
+        <div class="cz-icon">${sp.emoji}</div>
+        <div class="cz-text">${t('upload')}</div>
+        <div class="cz-sub">JPG · PNG · HEIC</div>
+      </div>
+      <img class="cz-preview" id="photoPreview"
+        src="${existing?.photo||''}"
+        ${existing?'':'style="display:none"'}
+        alt="preview"/>
+      <input type="file" id="fileIn" accept="image/*" capture="environment"
+        style="display:none" onchange="handlePhoto(this)"/>
+    </div>
+  `;
+
+  if (existing) submittedPhoto = existing.photo;
+  else submittedPhoto = null;
+}
+
+function toggleHint(btn) {
+  const panel = btn.nextElementSibling;
+  panel.classList.toggle('open');
+  btn.textContent = panel.classList.contains('open')
+    ? `${t('hint').replace('▾','▴')} ▴`
+    : `${t('hint')} ▾`;
+}
+
+function handlePhoto(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    submittedPhoto = e.target.result;
+    const zone  = document.getElementById('cameraZone');
+    const prev  = document.getElementById('photoPreview');
+    const btn   = document.getElementById('playSubmitBtn');
+    prev.src    = e.target.result;
+    prev.style.display = 'block';
+    zone.classList.add('filled');
+    zone.querySelector('.cz-placeholder').style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = t('submit');
+    btn.style.background = '';
+    btn.style.boxShadow  = '';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function submitAndNext() {
+  if (submittedPhoto) {
+    const sp = SPOTS[spotIdx];
+    const idx = photoGallery.findIndex(p=>p.spotIdx===spotIdx);
+    const entry = { spotIdx, spotName:sp.name, spotNameJa:sp.nameJa,
+                    spotEmoji:sp.emoji, award:sp.award, awardJa:sp.awardJa,
+                    photo:submittedPhoto, isWinner:false };
+    if (idx>=0) photoGallery[idx] = entry; else photoGallery.push(entry);
+    document.getElementById('galleryFab').style.display = 'flex';
+  }
+  nextSpotParticipant();
+}
+
+function skipSpot() { nextSpotParticipant(); }
+
+function nextSpotParticipant() {
+  if (spotIdx < SPOTS.length - 1) {
+    spotIdx++;
+    submittedPhoto = null;
+    renderParticipant();
+    document.querySelector('#playScreen .scrollable').scrollTop = 0;
+  } else {
+    showScreen('finaleScreen');
+  }
+}
+
+/* ════════════════════════════════════════
+   GUIDE RENDER
+════════════════════════════════════════ */
+function renderGuide() {
+  const sp = SPOTS[spotIdx];
+
+  // Header
+  document.getElementById('guideSpotTag').textContent  = `SPOT ${String(sp.id).padStart(2,'0')}`;
+  document.getElementById('guideSpotName').textContent = `${sp.emoji} ${sp.nameJa}`;
+  document.getElementById('guideAwardPill').textContent = `${sp.awardEmoji} ${sp.awardJa}`;
+
+  // Progress
+  const track = document.getElementById('guideTrack');
+  track.innerHTML = '';
+  SPOTS.forEach((_,i)=>{
+    const n = document.createElement('div');
+    n.className = `prog-node ${i<spotIdx?'done':i===spotIdx?'now':''}`;
+    track.appendChild(n);
+  });
+
+  // Scripts
+  setText('g-open',       sp.open);
+  setText('g-history',    sp.history);
+  setText('g-points',     sp.points.replace(/\n/g,'<br>'));
+  setText('g-mission',    sp.mission);
+  setText('g-hint',       sp.hint);
+  setText('g-criteria',   sp.criteria);
+  setText('g-judge-award',`${sp.awardEmoji} ${sp.awardJa}`);
+  setText('g-judge-criteria', `評価軸：${sp.criteria}`);
+  setText('g-announce',   sp.announce);
+  setText('g-prize-emoji',sp.prizeEmoji);
+  setText('g-prize-name', sp.prize);
+  setText('g-prize-desc', sp.prizeDesc);
+  setText('g-all-script', sp.allScript);
+
+  // Timer
+  timerReset();
+
+  // Submissions
+  renderSubmissions();
+
+  // Buttons
+  selectedWinner = null;
+  document.getElementById('announceBtn').disabled = true;
+  const isLast = spotIdx >= SPOTS.length - 1;
+  document.getElementById('guidNextBtn').textContent = isLast ? 'Show Finale →' : 'Next Spot →';
+
+  // Reset to explain phase
+  const firstTab = document.querySelector('.phase-btn');
+  switchPhase('explain', firstTab);
+}
+
+function setText(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+function switchPhase(phase, btn) {
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.phase-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.phase-action').forEach(a => a.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const section = document.getElementById(`phase-${phase}`);
+  const action  = document.getElementById(`action-${phase}`);
+  if (section) section.classList.add('active');
+  if (action)  action.classList.add('active');
+  document.querySelector('#guideScreen .scrollable').scrollTop = 0;
+}
+
+function switchPhaseBtn(phase) {
+  const map = {explain:0, shoot:1, judge:2, present:3};
+  const tabs = document.querySelectorAll('.phase-btn');
+  switchPhase(phase, tabs[map[phase]]);
+}
+
+/* ════════════════════════════════════════
+   TIMER
+════════════════════════════════════════ */
+function timerStart() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerSec = SPOTS[spotIdx].timerSec;
+  timerInterval = setInterval(()=>{
+    if (timerSec <= 0) { timerStop(); return; }
+    timerSec--;
+    updateTimer();
+  }, 1000);
+}
+
+function timerStop()  { timerRunning=false; clearInterval(timerInterval); }
+
+function timerReset() {
+  timerStop();
+  timerSec = SPOTS[spotIdx].timerSec;
+  updateTimer();
+}
+
+function updateTimer() {
+  const m = Math.floor(timerSec/60);
+  const s = timerSec%60;
+  const el = document.getElementById('timerDisplay');
+  if (!el) return;
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = `timer-digits ${timerSec<=60?'urgent':''}`;
+}
+
+/* ════════════════════════════════════════
+   SUBMISSIONS
+════════════════════════════════════════ */
+function renderSubmissions() {
+  const list = document.getElementById('submissions');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const participants = [...DEMO_PARTICIPANTS];
+  if (myName && !participants.find(p=>p.name===myName)) {
+    const submitted = photoGallery.find(p=>p.spotIdx===spotIdx);
+    participants.push({name:myName, emoji:'🧑', photo: submitted?.photo});
+  }
+
+  participants.forEach((p,i) => {
+    const submitted = photoGallery.find(ph=>ph.spotIdx===spotIdx && ph.photo);
+    const card = document.createElement('div');
+    card.className = 'sub-card';
+    card.id = `sc_${safeId(p.name)}`;
+    const sid = safeId(p.name);
+    card.innerHTML = `
+      <div class="sub-photo">
+        ${p.photo
+          ? `<img src="${p.photo}" alt="" style="width:100%;height:100%;object-fit:cover"/>`
+          : `${SPOTS[spotIdx].emoji}`}
+      </div>
+      <div class="sub-row">
+        <div>
+          <div class="sub-name">${p.emoji} ${p.name}</div>
+          <div class="sub-meta">Submitted ✓</div>
+        </div>
+        <button class="crown-btn" id="crown_${sid}" data-name="${p.name}">👑</button>
+      </div>
+      <div class="winner-tag">👑 WINNER</div>
+    `;
+    // iOSで確実に動くようにaddEventListenerで登録
+    card.querySelector('.crown-btn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectWinner(this.dataset.name);
+    });
+    // カード全体タップでも選択できるようにする
+    card.addEventListener('click', function() {
+      const btn = this.querySelector('.crown-btn');
+      if (btn) selectWinner(btn.dataset.name);
+    });
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(14px)';
+    setTimeout(()=>{
+      card.style.transition = 'all 0.35s var(--ease-out)';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, i*100);
+    list.appendChild(card);
+  });
+}
+
+function safeId(name) { return name.replace(/[^a-zA-Z0-9\u3040-\u9FFF]/g,'_'); }
+
+function selectWinner(name) {
+  selectedWinner = name;
+
+  // 全カードのリセット
+  document.querySelectorAll('.sub-card').forEach(c => {
+    c.classList.remove('selected', 'winner');
+  });
+  document.querySelectorAll('.crown-btn').forEach(b => {
+    b.classList.remove('active');
+    b.textContent = '👑';
+  });
+
+  // 選択されたカードをハイライト
+  const sid   = safeId(name);
+  const card  = document.getElementById(`sc_${sid}`);
+  const crown = document.getElementById(`crown_${sid}`);
+
+  if (card)  {
+    card.classList.add('selected', 'winner');
+    // 選択したカードへスムーズスクロール
+    card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+  if (crown) {
+    crown.classList.add('active');
+    crown.textContent = '✓';
+  }
+
+  // Announce ボタンを有効化
+  const announceBtn = document.getElementById('announceBtn');
+  if (announceBtn) {
+    announceBtn.disabled = false;
+    announceBtn.style.opacity = '1';
+  }
+}
+
+/* ════════════════════════════════════════
+   ANNOUNCE WINNER
+════════════════════════════════════════ */
+function doAnnounce() {
+  if (!selectedWinner) return;
+  const sp = SPOTS[spotIdx];
+
+  document.getElementById('wName').textContent      = selectedWinner;
+  document.getElementById('wAward').textContent     = sp.award;
+  document.getElementById('wMsg').innerHTML         = `"${sp.announce}"`;
+  document.getElementById('wPrizeEmoji').textContent= sp.prizeEmoji;
+  document.getElementById('wPrizeName').textContent = sp.prize;
+  document.getElementById('wPrizeDesc').textContent = sp.prizeDesc;
+
+  // Mark winner in gallery
+  const entry = photoGallery.find(p=>p.spotIdx===spotIdx);
+  if (entry && selectedWinner===myName) entry.isWinner = true;
+
+  // Detective list
+  const dList = document.getElementById('detList');
+  dList.innerHTML = '';
+  const all = [...DEMO_PARTICIPANTS];
+  if (myName && !all.find(p=>p.name===myName)) all.push({name:myName,emoji:'🧑'});
+  all.forEach(p=>{
+    const isW = p.name===selectedWinner;
+    const row = document.createElement('div');
+    row.className = 'det-row';
+    row.innerHTML = `
+      <span class="det-emoji">${p.emoji}</span>
+      <span class="det-name">${p.name}</span>
+      <span class="det-badge ${isW?'w':'p'}">${isW?'👑 Winner':'🎖 Detective'}</span>
+    `;
+    dList.appendChild(row);
+  });
+
+  // winnerHistory に記録
+  winnerHistory.push({ spot: spotIdx + 1, name: selectedWinner });
+
+  const isLast = spotIdx >= SPOTS.length - 1;
+  document.getElementById('wNextBtn').textContent = isLast
+    ? (appMode === 'guide' ? 'ツアー完了 →' : 'Final Reveal →')
+    : 'Next Spot →';
+
+  spawnConfetti();
+  showScreen('winnerScreen');
+}
+
+function afterWinner() {
+  const isLast = spotIdx >= SPOTS.length - 1;
+  if (isLast) {
+    if (appMode === 'guide') {
+      showGuideComplete();
+    } else {
+      showScreen('finaleScreen');
+    }
+  } else {
+    if (appMode === 'guide') {
+      spotIdx++;
+      selectedWinner = null;
+      renderGuide();
+      showScreen('guideScreen');
+    } else {
+      nextSpotParticipant();
+    }
+  }
+}
+
+function nextSpotFromGuide() {
+  const isLast = spotIdx >= SPOTS.length - 1;
+  if (isLast) {
+    showGuideComplete();
+    return;
+  }
+  spotIdx++;
+  selectedWinner = null;
+  renderGuide();
+  document.querySelector('#guideScreen .scrollable').scrollTop = 0;
+}
+
+function showGuideComplete() {
+  // ガイド用完了画面を動的に表示
+  const screen = document.getElementById('guideCompleteScreen');
+  // 受賞履歴を表示
+  const hist = document.getElementById('gcWinnerHistory');
+  hist.innerHTML = '';
+  winnerHistory.forEach((w,i) => {
+    const sp = SPOTS[i] || SPOTS[w.spot-1];
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;background:rgba(237,230,214,0.04);border:1px solid rgba(201,152,26,0.15);border-radius:12px;padding:10px 14px;margin-bottom:8px';
+    row.innerHTML = `
+      <span style="font-size:18px">${sp ? sp.emoji : '⛩'}</span>
+      <div style="flex:1">
+        <div style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;color:var(--gold)">SPOT ${w.spot} 受賞</div>
+        <div style="font-size:14px;font-weight:600;margin-top:2px">${w.name}</div>
+      </div>
+      <span style="font-size:20px">👑</span>
+    `;
+    hist.appendChild(row);
+  });
+  showScreen('guideCompleteScreen');
+}
+
+/* ════════════════════════════════════════
+   GALLERY
+════════════════════════════════════════ */
+function openGallery() {
+  const active = document.querySelector('.screen.active');
+  galleryPrev = active ? active.id : 'playScreen';
+  renderGallery();
+  showScreen('galleryScreen');
+}
+
+function closeGallery() { showScreen(galleryPrev); }
+
+function renderGallery() {
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  const total = photoGallery.length;
+  document.getElementById('galleryCount').textContent = total===0 ? 'No shots yet' : `${total} / ${SPOTS.length} shots taken`;
+
+  if (total === 0) {
+    grid.innerHTML = `<div class="gallery-empty"><div class="ge-icon">📷</div><div class="ge-title">No photos yet</div><div class="ge-desc">Complete missions and submit photos.<br>They'll appear here.</div></div>`;
+    return;
+  }
+
+  SPOTS.forEach((sp,i) => {
+    const entry = photoGallery.find(p=>p.spotIdx===i);
+    if (entry && entry.photo) {
+      const cell = document.createElement('div');
+      cell.className = 'gallery-cell';
+      cell.onclick = () => openPhotoFull(i);
+      cell.innerHTML = `
+        <img class="gallery-cell-img" src="${entry.photo}" alt="${sp.name}"/>
+        ${entry.isWinner ? '<div class="gallery-winner-badge">👑</div>' : ''}
+        <div class="gallery-overlay">
+          <span class="go-spot">SPOT ${sp.id}</span>
+          <span class="go-name">${sp.nameJa}</span>
+        </div>`;
+      grid.appendChild(cell);
+    } else {
+      const cell = document.createElement('div');
+      cell.className = 'gallery-placeholder';
+      cell.innerHTML = `<div class="gp-emoji">${sp.emoji}</div><div class="gp-name">${sp.nameJa}</div>`;
+      grid.appendChild(cell);
+    }
+  });
+}
+
+function openPhotoFull(idx) {
+  const sp = SPOTS[idx];
+  const entry = photoGallery.find(p=>p.spotIdx===idx);
+  const content = document.getElementById('pfContent');
+  if (entry && entry.photo) {
+    content.innerHTML = `<img class="photo-full-img" src="${entry.photo}" alt="${sp.name}"/>`;
+  } else {
+    content.innerHTML = `<div class="photo-full-placeholder">${sp.emoji}</div>`;
+  }
+  document.getElementById('pfSpot').textContent  = `SPOT ${sp.id} — ${sp.nameJa}`;
+  document.getElementById('pfAward').textContent = entry ? entry.award : sp.award;
+  document.getElementById('pfWinnerBadge').style.display = (entry&&entry.isWinner)?'block':'none';
+  showScreen('photoScreen');
+}
+
+/* ════════════════════════════════════════
+   FINALE / REVELATION — AI PHOTO ANALYSIS
+════════════════════════════════════════ */
+
+// フォールバック用固定コメント（API失敗時）
+const FALLBACK_CAPTIONS = [
+  'あなたは江戸時代から変わらないものを見つけた。',
+  'あなたは舞妓と同じ視点で世界を見た。',
+  'あなたは1400年の祈りの場所に光を見た。',
+  'あなたは200年流れ続ける水に不可能を映した。',
+  'あなたは聞こえない音を写真に収めた。',
+  'あなたは280年の記憶に触れ、その感情を撮った。',
+];
+
+async function analyzePhoto(photoBase64, spotName, missionText, lang) {
+  const langInstructions = {
+    en: 'Write the comment in English.',
+    ja: '日本語でコメントを書いてください。',
+    ko: '한국어로 코멘트를 작성해주세요.',
+    zh: '请用中文写评论。',
+  };
+
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      photo: photoBase64,
+      spotName,
+      missionText,
+      langInstruction: langInstructions[lang] || langInstructions.en
+    })
+  });
+
+  if (!response.ok) throw new Error('API error');
+  const data = await response.json();
+  return data.comment || null;
+}
+
+async function openRevelation() {
+  // 1. まず即座に画面を表示（これは必ず動く）
+  showScreen('revelationScreen');
+
+  const items = document.getElementById('revItems');
+  if (!items) return;
+  items.innerHTML = '';
+
+  // 2. フォールバックコメントで全カードを即座に構築
+  SPOTS.forEach((sp, i) => {
+    const entry = photoGallery.find(p => p.spotIdx === i);
+    const div = document.createElement('div');
+    div.className = 'rev-item';
+    div.id = `revItem_${i}`;
+
+    const hasPhoto = entry && entry.photo;
+    div.innerHTML = `
+      <div class="rev-photo" style="width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:56px;background:rgba(237,230,214,0.02)">
+        ${hasPhoto
+          ? `<img src="${entry.photo}" alt="${sp.nameJa}" style="width:100%;height:140px;object-fit:cover;display:block"/>`
+          : sp.emoji}
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--gold);padding:10px 14px 4px">
+        SPOT ${sp.id} — ${sp.nameJa}
+      </div>
+      <div class="rev-caption" id="revCaption_${i}" style="font-family:'Playfair Display',serif;font-size:14px;font-style:italic;color:rgba(237,230,214,0.65);line-height:1.7;padding:0 14px 14px;min-height:48px">
+        ${hasPhoto
+          ? `<span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:10px;font-style:normal;letter-spacing:1px">✦ AI分析中...</span>`
+          : '"このスポットはスキップされました。"'}
+      </div>
+    `;
+    items.appendChild(div);
+  });
+
+  // 3. 順番にフェードイン
+  setTimeout(() => {
+    document.querySelectorAll('.rev-item').forEach((el, i) => {
+      setTimeout(() => el.classList.add('show'), i * 350);
+    });
+  }, 100);
+
+  // 4. AI分析（失敗してもUIは壊れない）
+  for (let i = 0; i < SPOTS.length; i++) {
+    const sp    = SPOTS[i];
+    const entry = photoGallery.find(p => p.spotIdx === i);
+    const el    = document.getElementById(`revCaption_${i}`);
+    if (!entry || !entry.photo || !el) continue;
+
+    try {
+      const comment = await analyzePhoto(
+        entry.photo,
+        myLang === 'ja' ? sp.nameJa : sp.name,
+        myLang === 'ja' ? sp.missionTextJa : sp.missionText,
+        myLang
+      );
+      if (comment && comment.length > 0) {
+        // タイプライター表示
+        el.innerHTML = '';
+        const span = document.createElement('span');
+        el.appendChild(span);
+        let idx = 0;
+        const iv = setInterval(() => {
+          if (idx >= comment.length) { clearInterval(iv); return; }
+          span.textContent += comment[idx];
+          idx++;
+        }, 28);
+      } else {
+        el.textContent = `"${FALLBACK_CAPTIONS[i]}"`;
+      }
+    } catch (err) {
+      el.textContent = `"${FALLBACK_CAPTIONS[i]}"`;
+    }
+  }
+}
+
+/* ════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════ */
+function spawnConfetti() {
+  const field = document.getElementById('confettiField');
+  field.innerHTML = '';
+  const colors = ['#C9981A','#991B1B','#EDE6D6','#B91C1C','#E8C040','#FFFFFF'];
+  for (let i=0; i<45; i++) {
+    const p = document.createElement('div');
+    p.className = 'c-bit';
+    const sz = 5 + Math.random() * 9;
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${sz}px; height:${sz}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation-duration:${2.5+Math.random()*3}s;
+      animation-delay:${Math.random()*2}s;
+    `;
+    field.appendChild(p);
+  }
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
