@@ -812,8 +812,7 @@ function renderGPSMap(){
     const avgLat=locs.reduce((a,b)=>a+b.lat,0)/locs.length;
     const avgLng=locs.reduce((a,b)=>a+b.lng,0)/locs.length;
     const map=L.map('questMap',{zoomControl:true,scrollWheelZoom:false}).setView([avgLat,avgLng],15);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
-    locs.forEach(loc=>{
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'    locs.forEach(loc=>{
       const sp=SPOTS[loc.spotIdx];
       const icon=L.divIcon({html:`<div style="width:36px;height:36px;border-radius:50%;background:#C9981A;border:2px solid #09080C;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(201,152,26,0.6)">${sp.emoji}</div>`,className:'',iconSize:[36,36],iconAnchor:[18,18]});
       L.marker([loc.lat,loc.lng],{icon}).addTo(map).bindPopup(`<b>SPOT ${sp.id}</b><br>${sp.nameJa}`);
